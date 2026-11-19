@@ -60,3 +60,11 @@ No se interpreta el área bajo una tasa como número de muertes. No se suman rie
 
 Consultar `docs/ESTADO.md`. Una configuración de GitHub Actions no equivale a una ejecución aprobada. Los resultados y las conclusiones finales deben generarse y revisarse después de ejecutar MATLAB sobre el archivo real.
 
+## Historial Git y publicación
+
+Se preparó `historial.bundle` con cuatro commits iniciales y los correos del equipo como autores, según la autorización recibida. El historial agrupa trabajo asistido; no acredita aportes individuales independientes ni permite iniciar sesión como esos autores. GitHub asociará cada correo a una cuenta únicamente si su propietario lo tiene verificado.
+
+El historial aún no se publicó porque la integración rechazó la escritura. Para habilitarla, incluir este repositorio en los permisos de la aplicación GitHub utilizada por ChatGPT/Codex. Como alternativa, desde una terminal propia con Git y acceso al repositorio, ejecutar `./scripts/publicar.ps1` en PowerShell. Ese script importa el bundle y hace un push normal; no fuerza ni sobrescribe un historial existente.
+
+El archivo Word con la guía original del docente se conserva localmente y no está incluido en los commits.
+
