@@ -1,0 +1,14 @@
+results/*
+!results/README.md
+data/*.csv
+data/*.json
+data/*.mat
+data/*.bak
+data/acquired_at.txt
+*.asv
+*.m~
+__pycache__/
+entrega.zip
+historial.bundle
+
+
