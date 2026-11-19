@@ -4,6 +4,9 @@ writetable(R.modelComparison,fullfile(outdir,'comparacion_modelos.csv'));
 writetable(R.interpolation,fullfile(outdir,'validacion_interpolacion.csv'));
 writetable(R.derivatives,fullfile(outdir,'derivadas.csv'));
 writetable(R.countryCoverage,fullfile(outdir,'cobertura_paises.csv'));
+fid=fopen(fullfile(outdir,'resultados.json'),'w','n','UTF-8');
+assert(fid>=0,'No se pudo escribir resultados.json.');
+fprintf(fid,'%s',jsonencode(R,'PrettyPrint',true)); fclose(fid);
 names={'Iteration','Year','Residual','Lower','Upper'};
 writetable(array2table(R.bisectionHistory,'VariableNames',names), ...
     fullfile(outdir,'iteraciones_biseccion.csv'));

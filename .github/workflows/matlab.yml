@@ -7,22 +7,6 @@ on:
 permissions:
   contents: read
 jobs:
-  importar-historial:
-    if: github.event_name == 'push' && github.run_number == 1
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Incorporar los cuatro commits originales del equipo
-        run: |
-          git config user.name 'German Arturo Chipana Jeronimo'
-          git config user.email 'gchipanaj@unsa.edu.pe'
-          git fetch ./historial.bundle main
-          git merge --allow-unrelated-histories -s ours --no-edit FETCH_HEAD
-          git push origin HEAD:main
   matlab:
     runs-on: ubuntu-latest
     timeout-minutes: 45
