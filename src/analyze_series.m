@@ -1,6 +1,6 @@
 function R = analyze_series(T)
 %ANALYZE_SERIES Análisis de Perú con validación temporal sin fuga de datos.
-P = T(T.Code=="PER",:); t=P.Year; y=P.Rate; n=numel(t);
+P = T(T.Code=="PER",:); t=P.Year; y=P.Exposure; n=numel(t);
 holdout = max(3,ceil(0.2*n)); cut=n-holdout;
 train = 1:cut; validation = cut+1:n;
 models = cell(2,1); validationRMSE=zeros(2,1); trainingRMSE=zeros(2,1);
@@ -18,7 +18,7 @@ R.validationYears=[t(cut+1) t(end)];
 R.validationNote='Validación para elegir grado; no constituye un conjunto de prueba independiente.';
 R.model=mn_fit(t,y,bestDegree); % reajuste sobre todos los datos tras selección
 R.fit=mn_predict(R.model,t); R.fitMetrics=mn_metrics(y,R.fit);
-R.year=t; R.rate=y;
+R.year=t; R.exposure=y;
 % Interpolación validada únicamente en nodos interiores retirados.
 omitted=3:3:n-1; retained=setdiff(1:n,omitted);
 interpolated=mn_linear(t(retained),y(retained),t(omitted));
@@ -27,7 +27,7 @@ R.interpolation=table(t(omitted),y(omitted),interpolated,interpolated-y(omitted)
 R.interpolationMetrics=mn_metrics(y(omitted),interpolated);
 R.calculus=mn_calculus(t,y);
 R.derivatives=table(t,y,R.calculus.derivative, ...
-    'VariableNames',{'Year','Rate','RateChangePerYear'});
+    'VariableNames',{'Year','Exposure','ExposureChangePerYear'});
 R.threshold=0.8*y(1); % escenario académico, no umbral médico
 R.rootStatus='No se encontró un cruce con cambio de signo en el período observado.';
 R.rootBisection=NaN; R.rootNewton=NaN;
@@ -63,9 +63,9 @@ for k=1:numel(codes)
     Q=Q(ismember(Q.Year,t),:);
     if isempty(Q), continue; end
     country(end+1,1)=codes(k); first(end+1,1)=Q.Year(1); last(end+1,1)=Q.Year(end);
-    initial(end+1,1)=Q.Rate(1); final(end+1,1)=Q.Rate(end);
+    initial(end+1,1)=Q.Exposure(1); final(end+1,1)=Q.Exposure(end);
 end
 R.countryCoverage=table(country,first,last,initial,final, ...
-    'VariableNames',{'Code','FirstYear','LastYear','InitialRate','FinalRate'});
+    'VariableNames',{'Code','FirstYear','LastYear','InitialExposure','FinalExposure'});
 end
 

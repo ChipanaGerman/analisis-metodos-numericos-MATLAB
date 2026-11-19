@@ -1,0 +1,14 @@
+{
+  "sourceURL": "https://ourworldindata.org/grapher/average-exposure-pm25-pollution.csv",
+  "originalSHA256": "2b4aa64dd0da8323daec44fb2a32b14d5ffaa62a822464d2789cbf76a93d56ce",
+  "selection": [
+    "PER",
+    "CHL",
+    "BOL"
+  ],
+  "selectedRows": 102,
+  "operation": "Filter Code only; retain original column names and original numeric text; no imputation or rounding.",
+  "acquiredAtUTC": "2026-11-19T04:36:46.627184+00:00",
+  "license": "CC BY 4.0",
+  "attribution": "Global Burden of Disease Study 2023, IHME, via World Bank (2026), processed by Our World in Data"
+}

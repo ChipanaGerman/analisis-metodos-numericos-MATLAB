@@ -17,25 +17,25 @@ assert(fid>=0,'No se pudo escribir el manifiesto.');
 fprintf(fid,'%s',jsonencode(R.source,'PrettyPrint',true)); fclose(fid);
 % Gráficos reproducibles y sin ventanas emergentes.
 fig=figure('Visible','off','Color','w'); cleanup=onCleanup(@() close(fig));
-plot(R.year,R.rate,'o-','DisplayName','Dato OWID'); hold on;
+plot(R.year,R.exposure,'o-','DisplayName','Dato OWID'); hold on;
 fine=linspace(R.year(1),R.year(end),500);
 plot(fine,mn_predict(R.model,fine),'-','LineWidth',1.6,'DisplayName','Ajuste seleccionado');
 yline(R.threshold,'--','Umbral académico del 80 %','DisplayName','Umbral');
-xlabel('Año'); ylabel('Tasa por 100 000 habitantes'); grid on; legend('Location','best');
-title('Perú: datos y ajuste de la tasa de mortalidad');
+xlabel('Año'); ylabel('PM2.5 (µg/m³)'); grid on; legend('Location','best');
+title('Perú: datos y ajuste de la exposición a PM2.5');
 exportgraphics(fig,fullfile(outdir,'01_ajuste.png'),'Resolution',180);
-clf(fig); plot(R.year,R.fit-R.rate,'o-'); yline(0,'--'); grid on;
+clf(fig); plot(R.year,R.fit-R.exposure,'o-'); yline(0,'--'); grid on;
 xlabel('Año'); ylabel('Ajuste menos observación'); title('Residuos del ajuste final');
 exportgraphics(fig,fullfile(outdir,'02_residuos.png'),'Resolution',180);
 clf(fig); plot(R.year,R.calculus.derivative,'o-'); yline(0,'--'); grid on;
-xlabel('Año'); ylabel('Cambio de tasa por año'); title('Derivación numérica de la serie');
+xlabel('Año'); ylabel('Cambio de PM2.5 (µg/m³ por año)'); title('Derivación numérica de la serie');
 exportgraphics(fig,fullfile(outdir,'03_derivadas.png'),'Resolution',180);
 clf(fig); hold on; codes=unique(T.Code);
 for k=1:numel(codes)
     Q=T(T.Code==codes(k) & T.Year>=R.year(1) & T.Year<=R.year(end),:);
-    plot(Q.Year,Q.Rate,'DisplayName',char(codes(k)));
+    plot(Q.Year,Q.Exposure,'DisplayName',char(codes(k)));
 end
-xlabel('Año'); ylabel('Tasa por 100 000 habitantes'); legend('Location','best'); grid on;
+xlabel('Año'); ylabel('PM2.5 (µg/m³)'); legend('Location','best'); grid on;
 title('Comparación descriptiva; consultar cobertura por país');
 exportgraphics(fig,fullfile(outdir,'04_paises.png'),'Resolution',180);
 fid=fopen(fullfile(outdir,'resumen.html'),'w','n','UTF-8');
@@ -45,13 +45,13 @@ fprintf(fid,['<!doctype html><html lang="es"><meta charset="utf-8">' ...
     '<style>body{font:17px/1.55 system-ui;max-width:960px;margin:40px auto;padding:20px}' ...
     'img{max-width:100%%}table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:8px}' ...
     '@media print{body{margin:0}img{max-height:380px}}</style>' ...
-    '<h1>Análisis numérico de la mortalidad atribuida a contaminación exterior en Perú</h1>']);
+    '<h1>Análisis numérico de la exposición media anual a PM2.5 en Perú</h1>']);
 fprintf(fid,'<p>Serie: %s. Período: %d–%d; %d observaciones.</p>', ...
     escape(R.dataInfo.indicator),R.year(1),R.year(end),numel(R.year));
 fprintf(fid,'<p>Fuente: <a href="%s">Our World in Data</a>. Analizado en UTC: %s.</p>', ...
     R.source.url,R.source.analyzedAtUTC);
-fprintf(fid,'<h2>Resultados observados</h2><p>Tasa inicial %.6g; final %.6g. Variación relativa %.4g %%.</p>', ...
-    R.rate(1),R.rate(end),R.observedPercentChange);
+fprintf(fid,'<h2>Resultados observados</h2><p>Exposición inicial %.6g; final %.6g. Variación relativa %.4g %%.</p>', ...
+    R.exposure(1),R.exposure(end),R.observedPercentChange);
 fprintf(fid,'<h2>Ajuste y errores</h2><p>Grado seleccionado: %d. Validación temporal: %d–%d.</p>', ...
     R.model.degree,R.validationYears(1),R.validationYears(2));
 write_table(fid,R.modelComparison);
@@ -70,8 +70,8 @@ fprintf(fid,['<p>Año por bisección: %.10g; Newton salvaguardado: %.10g. ' ...
     'Residuos: %.6g y %.6g. NaN indica que no se obtuvo una raíz aplicable.</p>'], ...
     R.rootBisection,R.rootNewton,R.rootResidualBisection,R.rootResidualNewton);
 fprintf(fid,['<h2>Integración y derivación</h2><p>Trapecios: %.8g. %s: %.8g. ' ...
-    'Diferencia entre reglas: %.6g.</p><p>Unidad del área: tasa por año acumulada ' ...
-    '(muertes por 100 000 habitantes multiplicadas por años). No es un conteo de muertes. ' ...
+    'Diferencia entre reglas: %.6g.</p><p>Unidad del área: exposición integrada en el tiempo ' ...
+    '(µg/m³ multiplicados por años). No es una dosis individual ni un conteo de muertes. ' ...
     'La diferencia entre reglas no es un error verdadero conocido.</p>'], ...
     R.calculus.trapezoid,escape(R.calculus.simpsonRule),R.calculus.simpson,R.calculus.quadratureDifference);
 fprintf(fid,'<img src="03_derivadas.png" alt="Cambios anuales"><h2>Comparaciones</h2>');

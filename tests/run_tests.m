@@ -41,13 +41,13 @@ assert(abs(C.simpson-4.5)<1e-12 && contains(C.simpsonRule,'trapecio'));
 must_fail(@() mn_calculus([0 1 3],[0 1 9]),'mn:Grid');
 % Comprobación integral sintética sin descarga, con todos los módulos.
 T=table(repmat("Peru",21,1),repmat("PER",21,1),(2000:2020)', ...
-    100-2*(0:20)','VariableNames',{'Country','Code','Year','Rate'});
+    100-2*(0:20)','VariableNames',{'Country','Code','Year','Exposure'});
 R=analyze_series(T);
 assert(R.model.degree==1 || R.modelComparison.ValidationRMSE(2)<1e-10);
 assert(abs(R.rootBisection-2010)<1e-6 && abs(R.rootNewton-2010)<1e-6);
 assert(R.interpolationMetrics.rmse<1e-10);
 % La ausencia de cruce debe producir un estado explícito, no extrapolación.
-T.Rate=100+2*(0:20)'; R=analyze_series(T); assert(isnan(R.rootBisection));
+T.Exposure=100+2*(0:20)'; R=analyze_series(T); assert(isnan(R.rootBisection));
 test_loader;
 fprintf('Todas las pruebas MATLAB finalizaron correctamente.\n');
 end

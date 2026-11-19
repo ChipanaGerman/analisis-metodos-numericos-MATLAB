@@ -15,12 +15,12 @@ assert(isnumeric(year),'mn:Schema','Year debe ser numérico.');
 codes = string(raw.Code);
 keep = ismember(codes,["PER","CHL","BOL"]);
 T = table(string(raw.Entity(keep)),codes(keep),year(keep),values(keep), ...
-    'VariableNames',{'Country','Code','Year','Rate'});
+    'VariableNames',{'Country','Code','Year','Exposure'});
 assert(~isempty(T),'mn:Coverage','No hay países seleccionados.');
 assert(all(isfinite(T.Year) & T.Year==fix(T.Year)), ...
     'mn:Year','Hay años inválidos.');
-assert(all(isfinite(T.Rate) & T.Rate>=0),'mn:Values', ...
-    'Hay tasas negativas o ausentes. Revisar el origen; no se imputan automáticamente.');
+assert(all(isfinite(T.Exposure) & T.Exposure>=0),'mn:Values', ...
+    'Hay exposiciones negativas o ausentes. Revisar el origen; no se imputan automáticamente.');
 keys = T.Code + "_" + string(T.Year);
 assert(numel(unique(keys))==height(T),'mn:Duplicates','Hay pares país-año duplicados.');
 T = sortrows(T,{'Code','Year'});

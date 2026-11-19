@@ -1,6 +1,6 @@
 function raw = acquire_data(root,refresh)
 %ACQUIRE_DATA Descargar originales sin reemplazar silenciosamente la edición.
-slug = 'outdoor-pollution-death-rate';
+slug = 'average-exposure-pm25-pollution';
 folder = fullfile(root,'data');
 if ~isfolder(folder), mkdir(folder); end
 raw.csv = fullfile(folder,[slug '.csv']);
@@ -45,6 +45,14 @@ else
     raw.acquiredAtUTC = 'Descarga manual; fecha no registrada';
 end
 raw.metadataContents = jsondecode(fileread(raw.metadata));
+cols = fieldnames(raw.metadataContents.columns);
+assert(numel(cols)==1,'mn:Metadata','Se esperaba un indicador en los metadatos.');
+unit = raw.metadataContents.columns.(cols{1}).unit;
+assert(contains(lower(unit),'micrograms per cubic meter'), ...
+    'mn:Unit','La unidad no coincide con exposición a PM2.5 en microgramos por metro cúbico.');
+raw.unit = unit;
+snapshotPath = fullfile(folder,'snapshot.json');
+if isfile(snapshotPath), raw.snapshot=jsondecode(fileread(snapshotPath)); end
 end
 
 function remove_temporary(paths)
